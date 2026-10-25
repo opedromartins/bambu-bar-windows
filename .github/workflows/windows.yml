@@ -1,0 +1,79 @@
+name: Windows
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  package:
+    name: Docker tests and Windows package
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Match container user to runner
+        run: |
+          echo "LOCAL_UID=$(id -u)" >> "$GITHUB_ENV"
+          echo "LOCAL_GID=$(id -g)" >> "$GITHUB_ENV"
+      - name: Build toolchain
+        run: docker compose -f windows/compose.yaml build tools
+      - name: Build Windows app
+        run: docker compose -f windows/compose.yaml run --rm tools sh windows/scripts/build.sh build
+      - name: Start printer fleet
+        run: docker compose -f windows/compose.yaml up --build --force-recreate -d fleet
+      - name: Parser, TLS, reconnect and printer controls
+        run: docker compose -f windows/compose.yaml run --rm --use-aliases tools sh windows/scripts/build.sh integration
+      - name: Render UI in both languages and themes
+        run: docker compose -f windows/compose.yaml run --rm tools sh windows/scripts/build.sh preview
+      - name: Package installer and portable app
+        run: docker compose -f windows/compose.yaml run --rm tools sh windows/scripts/build.sh package
+      - name: Stop fleet
+        if: always()
+        run: docker compose -f windows/compose.yaml down
+      - uses: actions/upload-artifact@v7
+        with:
+          name: Bambu-Bar-windows-x64
+          path: |
+            build/windows/*.exe
+            build/windows/*.zip
+            build/windows/SHA256SUMS
+            build/windows/preview*.png
+  windows:
+    name: Windows 11 installation and runtime checks
+    needs: package
+    runs-on: windows-2025
+    timeout-minutes: 10
+    steps:
+      - uses: actions/download-artifact@v7
+        with:
+          name: Bambu-Bar-windows-x64
+          path: package
+      - name: Verify checksums
+        shell: pwsh
+        run: |
+          Get-Content package/SHA256SUMS | ForEach-Object {
+            $expected, $name = $_ -split '\s+', 2
+            if ((Get-FileHash (Join-Path package $name) -Algorithm SHA256).Hash.ToLowerInvariant() -ne $expected) { throw "Checksum mismatch: $name" }
+          }
+      - name: Install, exercise bundled runtime and DPAPI, uninstall
+        shell: pwsh
+        run: |
+          function Invoke-Checked($File, $Arguments) {
+            $p = Start-Process -FilePath $File -ArgumentList $Arguments -PassThru
+            if (-not $p.WaitForExit(60000)) { $p.Kill(); throw "Timed out: $File" }
+            if ($p.ExitCode -ne 0) { throw "Exit $($p.ExitCode): $File" }
+          }
+          $installer = (Get-ChildItem package/*-setup.exe).FullName
+          Invoke-Checked $installer '/S'
+          $dir = Join-Path $env:LOCALAPPDATA 'Programs/Bambu Bar'
+          if (-not (Test-Path "$dir/coreclr.dll")) { throw 'Self-contained runtime missing' }
+          Invoke-Checked "$dir/BambuBar.exe" '--storage-self-test'
+          Invoke-Checked "$dir/BambuBar.exe" '--notification-self-test'
+          Invoke-Checked "$dir/BambuBar.exe" '--demo --smoke-test'
+          if (-not (Test-Path 'build/windows/preview.png')) { throw 'UI render missing' }
+          Invoke-Checked "$dir/Uninstall.exe" '/S'
+          Start-Sleep -Seconds 2
+          if (Test-Path "$dir/BambuBar.exe") { throw 'Uninstall did not remove app' }

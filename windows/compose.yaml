@@ -1,0 +1,27 @@
+services:
+  tools:
+    build:
+      context: ..
+      dockerfile: windows/docker/Dockerfile
+    image: bambu-bar-windows-tools
+    user: "${LOCAL_UID:-1000}:${LOCAL_GID:-1000}"
+    volumes:
+      - ..:/src
+      - nuget:/nuget
+    working_dir: /src
+    environment:
+      FLEET_HOST: fleet
+    command: ["sh", "windows/scripts/build.sh", "build"]
+  fleet:
+    build:
+      context: ../scripts
+      dockerfile: fleet/Dockerfile
+    environment:
+      PUBLISHED_HOST: fleet
+      SSDP_TARGET: tools
+      SSDP_PORT: "2021"
+      SSDP_RESOLVE_HOST: "1"
+    ports:
+      - "127.0.0.1:18801-18812:18801-18812"
+volumes:
+  nuget:
