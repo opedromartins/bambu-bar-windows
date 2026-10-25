@@ -1,0 +1,95 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="BambuBar.Desktop.App" RequestedThemeVariant="Default">
+  <Application.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Dark">
+          <SolidColorBrush x:Key="GlassControl">#243D5046</SolidColorBrush>
+          <SolidColorBrush x:Key="GlassHover">#36526A5D</SolidColorBrush>
+          <SolidColorBrush x:Key="GlassLine">#20FFFFFF</SolidColorBrush>
+          <SolidColorBrush x:Key="GlassInk">#EDF4EF</SolidColorBrush>
+          <SolidColorBrush x:Key="DangerGlass">#35A34A53</SolidColorBrush>
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="Light">
+          <SolidColorBrush x:Key="GlassControl">#B3FFFFFF</SolidColorBrush>
+          <SolidColorBrush x:Key="GlassHover">#F0FFFFFF</SolidColorBrush>
+          <SolidColorBrush x:Key="GlassLine">#20345E47</SolidColorBrush>
+          <SolidColorBrush x:Key="GlassInk">#23362D</SolidColorBrush>
+          <SolidColorBrush x:Key="DangerGlass">#19C54858</SolidColorBrush>
+        </ResourceDictionary>
+      </ResourceDictionary.ThemeDictionaries>
+    </ResourceDictionary>
+  </Application.Resources>
+  <Application.Styles>
+    <FluentTheme />
+    <Style Selector="ProgressBar">
+      <Setter Property="MinWidth" Value="0" />
+      <Setter Property="ClipToBounds" Value="True" />
+    </Style>
+    <Style Selector="Button">
+      <Setter Property="CornerRadius" Value="10" />
+      <Setter Property="Padding" Value="14,10" />
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="Background" Value="{DynamicResource GlassControl}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource GlassLine}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="Foreground" Value="{DynamicResource GlassInk}" />
+    </Style>
+    <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource GlassHover}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource GlassLine}" />
+    </Style>
+    <Style Selector="Button:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#45679680" />
+    </Style>
+    <Style Selector="Button:disabled">
+      <Setter Property="Opacity" Value="0.38" />
+    </Style>
+    <Style Selector="Button:disabled /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource GlassControl}" />
+    </Style>
+    <Style Selector="Button.nav">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Padding" Value="12,11" />
+      <Setter Property="CornerRadius" Value="8" />
+    </Style>
+    <Style Selector="Button.nav.selected">
+      <Setter Property="Background" Value="#357CE5" />
+    </Style>
+    <Style Selector="Button.nav.selected:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#468BF0" />
+    </Style>
+    <Style Selector="Button.primary">
+      <Setter Property="Background" Value="#7CE0AD" />
+      <Setter Property="Foreground" Value="#113B28" />
+    </Style>
+    <Style Selector="Button.danger">
+      <Setter Property="Background" Value="{DynamicResource DangerGlass}" />
+      <Setter Property="BorderBrush" Value="#20E97380" />
+    </Style>
+    <Style Selector="Button.quiet">
+      <Setter Property="Padding" Value="10,6" />
+      <Setter Property="CornerRadius" Value="16" />
+    </Style>
+    <Style Selector="TextBox">
+      <Setter Property="CornerRadius" Value="9" />
+      <Setter Property="Padding" Value="12,10" />
+      <Setter Property="FontSize" Value="13" />
+      <Setter Property="Background" Value="{DynamicResource GlassControl}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource GlassLine}" />
+      <Setter Property="Foreground" Value="{DynamicResource GlassInk}" />
+    </Style>
+    <Style Selector="ComboBox">
+      <Setter Property="CornerRadius" Value="9" />
+      <Setter Property="Padding" Value="11,8" />
+      <Setter Property="MinHeight" Value="38" />
+      <Setter Property="Background" Value="{DynamicResource GlassControl}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource GlassLine}" />
+      <Setter Property="Foreground" Value="{DynamicResource GlassInk}" />
+    </Style>
+  </Application.Styles>
+</Application>
