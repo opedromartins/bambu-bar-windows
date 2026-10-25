@@ -12,3 +12,6 @@ xcuserdata/
 Resources/AppIcon.icns
 scripts/emulator/certs/
 scripts/fleet/out/
+windows/**/bin/
+windows/**/obj/
+windows/**/.avalonia-build-tasks/

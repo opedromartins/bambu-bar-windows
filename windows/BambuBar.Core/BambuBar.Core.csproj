@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="MQTTnet" Version="5.0.1.1416" />
+    <Content Include="../../Resources/Certificates/*.pem" Link="Resources/Certificates/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../../Resources/HMS/*.json.deflate" Link="Resources/HMS/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../../Resources/Localizable.xcstrings" Link="Resources/Localizable.xcstrings" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../../Resources/filaments.json" Link="Resources/filaments.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

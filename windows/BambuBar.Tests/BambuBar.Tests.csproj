@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType></PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../BambuBar.Core/BambuBar.Core.csproj" />
+    <Content Include="../../scripts/emulator/p2s-sample.json" Link="p2s-sample.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

@@ -355,8 +355,11 @@ class Printer:
             self.delta({"wifi_signal": f"-{random.randint(45, 70)}dBm"})
 
     def ssdp(self):
+        location = PUBLISHED_HOST
+        if os.environ.get("SSDP_RESOLVE_HOST") == "1":
+            location = socket.gethostbyname(location)
         return ("NOTIFY * HTTP/1.1\r\nHOST: 239.255.255.250:1990\r\nServer: UPnP/1.0\r\n"
-                f"Location: {PUBLISHED_HOST}:{self.port}\r\nNT: urn:bambulab-com:device:3dprinter:1\r\n"
+                f"Location: {location}:{self.port}\r\nNT: urn:bambulab-com:device:3dprinter:1\r\n"
                 f"USN: {self.serial}\r\nCache-Control: max-age=1800\r\nDevModel.bambu.com: {self.code}\r\n"
                 f"DevName.bambu.com: {self.name}\r\nDevConnect.bambu.com: lan\r\nDevBind.bambu.com: free\r\n"
                 "Devseclink.bambu.com: secure\r\nDevVersion.bambu.com: 01.03.00.00\r\nDevCap.bambu.com: 1\r\n\r\n")
