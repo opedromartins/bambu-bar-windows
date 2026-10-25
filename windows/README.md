@@ -2,7 +2,7 @@
 
 An independent Windows desktop implementation of Bambu Bar. The Swift macOS app is unchanged. The Windows app uses .NET 10, Avalonia and MQTTnet and talks directly to the printers; it needs neither Docker nor a separately installed .NET runtime when installed.
 
-Fork: [opedromartins/bambu-bar-windows](https://github.com/opedromartins/bambu-bar-windows). See the [implementation and macOS parity notes](IMPLEMENTATION.md) and [Windows changelog](CHANGELOG.md). Successful runs of the [Windows workflow](https://github.com/opedromartins/bambu-bar-windows/actions/workflows/windows.yml) provide the installer, portable ZIP, checksums and preview images in the **Bambu-Bar-windows-x64** artifact. The workflow does not publish GitHub releases.
+Fork: [opedromartins/bambu-bar-windows](https://github.com/opedromartins/bambu-bar-windows). See the [implementation and macOS parity notes](IMPLEMENTATION.md) and [Windows changelog](CHANGELOG.md). Successful runs of the [Windows workflow](https://github.com/opedromartins/bambu-bar-windows/actions/workflows/windows.yml) provide the installer, portable ZIP, checksums and preview images in the **Bambu-Bar-windows-x64** artifact. Version tags also publish [GitHub Releases](https://github.com/opedromartins/bambu-bar-windows/releases) after all checks pass.
 
 ## Install and connect
 
@@ -123,3 +123,28 @@ The UI smoke check also renders the quick panel in both themes and fleet view, c
 - Run the portable app, verify checksums, uninstall and confirm program and notification-registration removal.
 
 Slicer import, print history, desktop widgets, open-at-login registration, camera and app update checks remain outside this version. The 3D view is an approximate visualization, not a live G-code toolpath. No certificate for Authenticode signing is included. MIT license and original credits apply; existing certificates, filament tables, HMS texts and artwork are reused from the repository.
+
+## Publishing a release
+
+1. Set `Version` in `windows/Directory.Build.props` and update the Windows changelog.
+2. Commit and push those changes to `main`.
+3. Tag that commit with the exact package version and push the tag:
+
+```sh
+git tag v1.3.1
+git push origin v1.3.1
+```
+
+The `v*` tag must equal `v` plus the package version; a mismatch fails before the
+build. Docker tests/packaging and native Windows checks must all pass before the
+release job runs. It verifies checksums, creates a draft with generated release
+notes, uploads the installer, portable ZIP and `SHA256SUMS`, then publishes it.
+Tags with a version suffix such as `v1.3.2-rc.1` create prereleases; set the package
+version to `1.3.2-rc.1` first. Packages remain unsigned.
+
+Only the release job receives `contents: write`, using the built-in `GITHUB_TOKEN`;
+no personal access token is required. Branch pushes and pull requests only build
+artifacts. Retrying a failed publication resumes its draft and replaces draft
+assets; an already published release is left unchanged. A failed upload leaves a
+draft rather than a public release with missing assets. Tags must point to commits
+containing this workflow; existing tags do not trigger it retroactively.

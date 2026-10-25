@@ -59,7 +59,7 @@ the macOS source and local build scripts remain available without macOS CI build
 | Open at login | No automatic registration; `--tray` is available for user-managed startup. |
 | App update checks | Not ported. Firmware availability shown in telemetry is distinct from updating this app. |
 | Camera | Not implemented. |
-| Distribution/signing | Self-contained win-x64 installer and ZIP; unsigned. No automatic release publication. |
+| Distribution/signing | Self-contained win-x64 installer and ZIP; unsigned. Version tags automatically publish releases after Docker and Windows checks pass. |
 
 ## Validation record
 

@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Publish GitHub Releases for matching `v*` version tags after Docker and native
+  Windows checks, with installer, portable ZIP and checksums.
+
 - Create a private runtime directory for each Docker build/test invocation so .NET
   named mutexes work with arbitrary host UIDs, including GitHub Actions UID 1001.
 - Remove the upstream macOS CI workflow so this fork builds and tests Windows only.

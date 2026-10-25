@@ -1,6 +1,8 @@
 name: Windows
 on:
   push:
+    branches: ['**']
+    tags: ['v*']
   pull_request:
   workflow_dispatch:
 permissions:
@@ -14,6 +16,18 @@ jobs:
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
+      - name: Validate release tag against package version
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          python3 - <<'PY'
+          import os, xml.etree.ElementTree as ET
+          version = ET.parse('windows/Directory.Build.props').findtext('.//Version')
+          expected = f'v{version}'
+          if os.environ['RELEASE_TAG'] != expected:
+              raise SystemExit(f'Release tag must match package version: {expected}')
+          PY
       - name: Match container user to runner
         run: |
           echo "LOCAL_UID=$(id -u)" >> "$GITHUB_ENV"
@@ -41,6 +55,7 @@ jobs:
             build/windows/*.zip
             build/windows/SHA256SUMS
             build/windows/preview*.png
+          if-no-files-found: error
   windows:
     name: Windows 11 installation and runtime checks
     needs: package
@@ -77,3 +92,28 @@ jobs:
           Invoke-Checked "$dir/Uninstall.exe" '/S'
           Start-Sleep -Seconds 2
           if (Test-Path "$dir/BambuBar.exe") { throw 'Uninstall did not remove app' }
+  release:
+    name: Publish Windows release
+    needs: [package, windows]
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    concurrency:
+      group: release-${{ github.ref }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v7
+        with:
+          name: Bambu-Bar-windows-x64
+          path: package
+      - name: Verify and publish installer, ZIP and checksums
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: bash windows/scripts/release.sh

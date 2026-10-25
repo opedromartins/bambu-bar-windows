@@ -19,7 +19,7 @@ These images use demo data and were generated on Linux/Xvfb; native backdrop blu
 
 ## Getting started on Windows
 
-Download the **Bambu-Bar-windows-x64** artifact from a successful [Windows workflow](https://github.com/opedromartins/bambu-bar-windows/actions/workflows/windows.yml) run. Extract the artifact and run `Bambu-Bar-1.3.1-windows-x64-setup.exe`, or extract the portable ZIP and open `BambuBar.exe`. Initial packages are unsigned. CI generates artifacts; it does not publish releases automatically.
+Download the installer or portable ZIP from [Releases](https://github.com/opedromartins/bambu-bar-windows/releases). Development builds are also available in the **Bambu-Bar-windows-x64** artifact of successful [Windows workflow](https://github.com/opedromartins/bambu-bar-windows/actions/workflows/windows.yml) runs. Extract the artifact and run `Bambu-Bar-1.3.1-windows-x64-setup.exe`, or extract the portable ZIP and open `BambuBar.exe`. Initial packages are unsigned. Pushing a version tag publishes a release automatically after Docker and native Windows checks pass.
 
 Requirements: Windows 10 22H2 or Windows 11, x64, and a printer on the same network. In **Settings**, select a discovered printer or enter its IP address and access code. Print controls require LAN Only + Developer Mode in the printer firmware. Read the [validation limits](windows/README.md#validation) before distributing: Docker tests do not replace testing on Windows and physical printers.
 
