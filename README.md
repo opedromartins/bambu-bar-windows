@@ -1,4 +1,44 @@
-# Bambu Bar
+# Bambu Bar for Windows
+
+A fork of [rolottr/bambu-bar](https://github.com/rolottr/bambu-bar), with a desktop implementation for **Windows x64** in C#/.NET 10 and Avalonia. The original Swift macOS app and its resources are preserved.
+
+- **Local monitoring:** multiple printers, network discovery, manual IP setup, progress, print stages, remaining time, temperatures, telemetry, AMS, filaments and HMS errors.
+- **Interface:** light/dark themes, Acrylic transparency where available, a system tray panel, interactive 3D models, keyboard shortcuts and configurable native notifications.
+- **Shared translations:** all 18 languages in `Resources/Localizable.xcstrings`, without a separate Windows catalogue.
+- **Secure connections:** MQTT over TLS, bundled Bambu certificate authorities, serial verification before sending credentials and access codes protected with per-user DPAPI.
+- **Distribution:** a self-contained per-user installer and portable ZIP. Docker is used to build and test; it is not required to run the app.
+
+[Windows guide](windows/README.md) · [Implementation and macOS differences](windows/IMPLEMENTATION.md) · [Windows changelog](windows/CHANGELOG.md) · [CI and packages](https://github.com/opedromartins/bambu-bar-windows/actions/workflows/windows.yml)
+
+<p align="center">
+  <img src=".github/assets/windows/printer.png" width="760" alt="Windows app in demo mode showing the 3D printer, progress and controls">
+  <img src=".github/assets/windows/quick-panel.png" width="350" alt="Compact Windows system tray panel in demo mode">
+</p>
+
+These images use demo data and were generated on Linux/Xvfb; native backdrop blur depends on Windows.
+
+## Getting started on Windows
+
+Download the **Bambu-Bar-windows-x64** artifact from a successful [Windows workflow](https://github.com/opedromartins/bambu-bar-windows/actions/workflows/windows.yml) run. Extract the artifact and run `Bambu-Bar-1.3.1-windows-x64-setup.exe`, or extract the portable ZIP and open `BambuBar.exe`. Initial packages are unsigned. CI generates artifacts; it does not publish releases automatically.
+
+Requirements: Windows 10 22H2 or Windows 11, x64, and a printer on the same network. In **Settings**, select a discovered printer or enter its IP address and access code. Print controls require LAN Only + Developer Mode in the printer firmware. Read the [validation limits](windows/README.md#validation) before distributing: Docker tests do not replace testing on Windows and physical printers.
+
+To build, install Docker Desktop with Linux containers and run in PowerShell:
+
+```powershell
+git clone https://github.com/opedromartins/bambu-bar-windows.git
+cd bambu-bar-windows
+.\windows\build.ps1 test
+.\windows\build.ps1 integration
+.\windows\build.ps1 preview
+.\windows\build.ps1 package
+```
+
+Packages and checksums are written to `build/windows/`. The host does not need the .NET SDK, Blender or NSIS. See the [Windows guide](windows/README.md) for complete instructions, shortcuts, emulator usage, storage and limitations.
+
+## Original macOS project
+
+The following content describes the original macOS version. Features and validation described in this section apply to the Swift app; see the [feature comparison](windows/IMPLEMENTATION.md#feature-parity) for the Windows port.
 
 ![Bambu Bar window touring three pages: the Printer page with a turning 3D P2S printing in gold PLA Silk+ at 65% with time left, controls, temperatures and fans; the Filament page with Bambu Lab spools by colour name and grams left, a SUNLU spool and the external spool; and All Printers, six printers with the paused one first](.github/assets/showcase.webp)
 
@@ -136,7 +176,7 @@ To verify a download, run this next to both files:
 shasum -a 256 -c Bambu-Bar-1.0.0-macos.zip.sha256
 ```
 
-The [GitHub Actions workflow](.github/workflows/build.yml) builds and uploads an ad-hoc signed ZIP on pushes and pull requests. It does not sign, notarize or publish a release.
+This fork runs [Windows CI](.github/workflows/windows.yml) only. The macOS build scripts above remain available for local builds; no macOS packages are built by this fork's GitHub Actions.
 
 ### Developing without a printer
 
